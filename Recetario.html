@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetario de Dietas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6c757d;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #f5576c;
+            border-bottom: 3px solid #f5576c;
+            margin-bottom: -3px;
+        }
+
+        .tab-button.ninos {
+            color: #ff6b6b;
+        }
+
+        .tab-button.ninos.active {
+            color: #ff6b6b;
+            border-bottom-color: #ff6b6b;
+        }
+
+        .tab-button.adultos {
+            color: #4ecdc4;
+        }
+
+        .tab-button.adultos.active {
+            color: #4ecdc4;
+            border-bottom-color: #4ecdc4;
+        }
+
+        .search-box {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #dee2e6;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .recipe-info {
+            padding: 20px;
+        }
+
+        .recipe-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .meta-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .tag-tiempo {
+            background: #ffeaa7;
+            color: #fdcb6e;
+        }
+
+        .tag-dificultad {
+            background: #dfe6e9;
+            color: #636e72;
+        }
+
+        .tag-categoria {
+            background: #a29bfe;
+            color: #6c5ce7;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                font-size: 1em;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Recetario de Dietas</h1>
+            <p>Videos saludables para toda la familia</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button ninos active" onclick="switchTab('ninos')">
+                👶 Dietas para Niños
+            </button>
+            <button class="tab-button adultos" onclick="switchTab('adultos')">
+                👨 Dietas para Adultos
+            </button>
+        </div>
+
+        <div id="ninos" class="tab-content active">
+            <div class="recipes-grid" id="ninos-grid">
+                <div class="recipe-card" data-title="espinacas con queso">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/r7K9CjKKr6k" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Espinacas con Queso</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 20 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="calabacitas con pollo">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/SZnJab2GLZM" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Calabacitas con Pollo</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 25 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="sopa de fideo con verduras">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/EKLXeMmLE2U" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Sopa de Fideo con Verduras</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 30 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="pizza con tortilla de maíz">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/x3TqUzECIVY" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Pizza con Tortilla de Maíz</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 15 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🌙 Cena</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="parfait de yogur">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/EqCbYNc69lc" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Parfait Económico de Yogur</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 10 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🌅 Desayuno</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="nuggets caseros de pollo">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/U2EZ0G8xBnE" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Nuggets Caseros de Pollo</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 30 min</span>
+                            <span class="meta-tag tag-dificultad">⭐⭐ Media</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="ensalada de manzana">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/AL2nP_EuX84" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Ensalada de Manzana</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 15 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍪 Snack</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adultos" class="tab-content">
+            <div class="recipes-grid" id="adultos-grid">
+                <div class="recipe-card" data-title="salteado de verduras con pollo">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/jSiZzQ7hepc" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Salteado de Verduras con Pollo</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 25 min</span>
+                            <span class="meta-tag tag-dificultad">⭐⭐ Media</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="omelette con verduras">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/tG26VbD-rhg" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Omelette con Verduras</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 15 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🌅 Desayuno</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="arroz con lentejas">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/wKHfKhLYyGU" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Arroz con Lentejas</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 35 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="tacos de pollo con frijoles">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/3FoItYlhZAA" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Tacos de Pollo con Frijoles</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 30 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="ensalada de atún">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/XUL3d9pI6hQ" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Ensalada de Atún</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 15 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="caldo de pollo con arroz">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/09wL0xN8aUg" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Caldo de Pollo con Arroz</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 40 min</span>
+                            <span class="meta-tag tag-dificultad">⭐⭐ Media</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-title="ensalada de garbanzos y pollo">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/_buCMoiwrKc" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">Ensalada de Garbanzos y Pollo</div>
+                        <div class="recipe-meta">
+                            <span class="meta-tag tag-tiempo">⏱️ 20 min</span>
+                            <span class="meta-tag tag-dificultad">⭐ Fácil</span>
+                            <span class="meta-tag tag-categoria">🍽️ Comida</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todos los contenidos
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Desactivar todos los botones
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Activar el tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Limpiar búsqueda
+            document.getElementById('searchInput').value = '';
+            searchRecipes();
+        }
+
+        function searchRecipes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const activeTab = document.querySelector('.tab-content.active');
+            const cards = activeTab.querySelectorAll('.recipe-card');
+
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
